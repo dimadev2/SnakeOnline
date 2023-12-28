@@ -2,7 +2,7 @@ import threading
 import socket
 import time
 import uuid
-from random import randint
+from random import randrange
 from config import *
 
 UP = 0
@@ -88,7 +88,7 @@ class ClientHandler:
         for i in range(len(self.snakes)):
             if self.snakes[i].id == id:
                 for cell in self.snakes[i].body:
-                    if randint(100) > FOOD_AFTER_DEAD_FREQ* 100:
+                    if randrange(100) > FOOD_AFTER_DEAD_FREQ* 100:
                         self.foods.append(cell[:])
                 del self.snakes[i]
                 break
@@ -124,8 +124,8 @@ class SnakeServer:
             client.clientSocket.close()
 
     def generateFood(self):
-        x = randint(1, count_cell - 2)
-        y = randint(1, count_cell - 2)
+        x = randrange(1, count_cell - 2)
+        y = randrange(1, count_cell - 2)
         
         for snake in self.snakes:
             for i in range(1, len(snake.body)):
