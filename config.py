@@ -1,4 +1,4 @@
-server_addr = '26.94.143.159'
+server_addr = '26.184.212.228'
 server_port = 9000
 queue_size = 5
 
@@ -14,7 +14,7 @@ cell_size = 15
 count_cell = 40
 
 
-network_time = 0
+network_time = 0.01
 business_time = 0.25
 
 
