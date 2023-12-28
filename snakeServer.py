@@ -4,7 +4,7 @@ import time
 import uuid
 from random import randrange
 from config import *
-
+import sys
 
 fieldSync = threading.Lock()
 
@@ -66,8 +66,9 @@ class ClientHandler:
                     self.removeSnake(id)
                 self.clientSocket.close()
                 break
-        
-        self.removeSnake(id)
+                
+        with fieldSync:
+            self.removeSnake(id)
         self.clientSocket.close()
 
     def sendSnakes(self):
@@ -94,12 +95,14 @@ class ClientHandler:
                 break
 
 
-class SnakeServer:
-    def __init__(self):
+class SnakeServer:        
+    def __init__(self, host = server_addr):
         self.clientHandlers = []
         self.snakes = []
         self.foods = []
         self.scores = []
+        self.serverAddr = host
+        self.serverPort = server_port
 
     def start(self):
         threading.Thread(target=self.clientConnectMainLoop).start()
@@ -151,10 +154,10 @@ class SnakeServer:
         serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
         try:
-            serverSocket.bind((server_addr, server_port))
+            serverSocket.bind((self.serverAddr, self.serverPort))
         except Exception:
             serverSocket.close()
-            serverSocket.bind((server_addr, server_port))
+            serverSocket.bind((self.serverAddr, self.serverPort))
         
         serverSocket.listen(1)
 
@@ -212,15 +215,14 @@ class SnakeServer:
         return False
         
 
-                
-
-        pass
-        #generateFood
-
     def moveSnakes(self):
         for snake in self.snakes:
             snake.move()
 
 if __name__ == "__main__":
-    server = SnakeServer()
+    if (len(sys.argv) == 1):
+        server = SnakeServer()
+    else:
+        server = SnakeServer(sys.argv[1])
+        
     server.start()

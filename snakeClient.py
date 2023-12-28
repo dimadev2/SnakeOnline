@@ -3,6 +3,7 @@ from random import randint
 from threading import Thread, Lock
 import socket
 from config import *
+import sys
 
 def draw_board():
     win.fill((100, 100, 100))
@@ -96,7 +97,12 @@ win = pygame.display.set_mode((screen_width, screen_height))
 
 
 client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_sock.connect((server_addr, server_port))
+
+if (len(sys.argv) == 1):
+    client_sock.connect((server_addr, server_port))
+else:
+    client_sock.connect((sys.argv[1], server_port))
+
 Thread(target=recv_routine).start()
 
 while True:
