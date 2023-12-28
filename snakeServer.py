@@ -40,7 +40,8 @@ class ClientHandler:
 
     def handle(self):
         id = uuid.uuid4()
-        self.snakes.append(Snake(id))
+        with fieldSync:
+            self.snakes.append(Snake(id))
         self.me = self.snakes[-1]
 
         while not self.me.isDead:
@@ -109,9 +110,12 @@ class SnakeServer:
         try:
             while True:
                 self.checkCollision()
-                while len(self.foods) < len(self.snakes) * FOOD_FOR_ONE + START_FOOD:
-                    self.generateFood()
-                self.moveSnakes()
+                with fieldSync:
+                    while len(self.foods) < len(self.snakes) * FOOD_FOR_ONE + START_FOOD:
+                        self.generateFood()
+                
+                with fieldSync:
+                    self.moveSnakes()
                 time.sleep(business_time)
 
         except KeyboardInterrupt:
