@@ -5,12 +5,6 @@ import uuid
 from random import randrange
 from config import *
 
-UP = 0
-DOWN = 1
-LEFT = 2
-RIGHT = 3
-NONE = 4
-
 
 class Snake:
     def __init__(self, id):
