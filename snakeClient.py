@@ -9,11 +9,6 @@ import sys
 def draw_board():
     win.fill((100, 100, 100))
 
-    pygame.draw.rect(win, (0, 0, 0), (0, 0, cell_size, screen_width))
-    pygame.draw.rect(win, (0, 0, 0), (0, 0, screen_width, cell_size))
-    pygame.draw.rect(win, (0, 0, 0), (screen_width - cell_size, 0, cell_size, screen_width))
-    pygame.draw.rect(win, (0, 0, 0), (0, screen_height - cell_size, screen_width, cell_size))
-
     for i in range(count_cell + 1):
         pygame.draw.line(win, (255, 255, 255), (0, i*(cell_size + 1)), (screen_width, i*(cell_size + 1)))
 
@@ -23,7 +18,7 @@ def draw_board():
 
 def draw_snake(snake, color):
     for cell in snake:
-        pygame.draw.rect(win, color, (cell[0]*(cell_size + 1) + 1, cell[1]*(cell_size + 1) + 1, cell_size, cell_size))
+        pygame.draw.rect(win, color, (cell[0]*(cell_size + 1), cell[1]*(cell_size + 1), cell_size + 2, cell_size + 2))
 
 
 def draw_food(food):
