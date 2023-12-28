@@ -14,7 +14,7 @@ cell_size = 15
 count_cell = 40
 
 
-network_time = 0.01
+network_time = 0
 business_time = 0.25
 
 
