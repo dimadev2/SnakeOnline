@@ -5,11 +5,8 @@ import uuid
 from random import randrange
 from config import *
 
-UP = 0
-DOWN = 1
-LEFT = 2
-RIGHT = 3
-NONE = 4
+
+fieldSync = threading.Lock()
 
 
 class Snake:
@@ -49,8 +46,9 @@ class ClientHandler:
         while not self.me.isDead:
             try:
                 time.sleep(network_time)
-                self.sendSnakes()
-                self.sendFoods()
+                with fieldSync:
+                    self.sendSnakes()
+                    self.sendFoods()
                 action = int.from_bytes(self.clientSocket.recv(4), "big")
                 for snake in self.snakes:
                     if snake.id == id:
@@ -63,7 +61,8 @@ class ClientHandler:
                         elif action == DOWN:
                             snake.direction = [0, 1]
             except Exception:
-                self.removeSnake(id)
+                with fieldSync:
+                    self.removeSnake(id)
                 self.clientSocket.close()
                 break
         
@@ -185,9 +184,11 @@ class SnakeServer:
                     deleted_food.append(i)
                     snake.addCell()
 
-            for deleted_food_id in deleted_food[::-1]:
-                del self.foods[deleted_food_id]
-                self.generateFood()
+            with fieldSync:
+                for deleted_food_id in deleted_food[::-1]:
+                    del self.foods[deleted_food_id]
+                    while len(self.foods) < len(self.snakes) * FOOD_FOR_ONE + START_FOOD:
+                        self.generateFood()
         
 
     def collisionWithSnake(self, snake1, snake2):
