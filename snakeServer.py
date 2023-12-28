@@ -13,6 +13,7 @@ class Snake:
     def __init__(self, id):
         self.body = [[1, 1], [0, 1]]
         self.direction = [0, 1]
+        self.color = [randrange(256), randrange(256), randrange(256)]
         self.id = id
         self.isDead = False
 
@@ -75,6 +76,9 @@ class ClientHandler:
         self.clientSocket.sendall(int(len(self.snakes)).to_bytes(4, "big"))
         for snake in self.snakes:
             self.clientSocket.sendall(int(len(snake.body)).to_bytes(4, "big"))
+            self.clientSocket.sendall(int(snake.color[0]).to_bytes(4, "big"))
+            self.clientSocket.sendall(int(snake.color[1]).to_bytes(4, "big"))
+            self.clientSocket.sendall(int(snake.color[2]).to_bytes(4, "big"))
             for cell in snake.body:
                 self.clientSocket.sendall(int(cell[0]).to_bytes(4, "big"))
                 self.clientSocket.sendall(int(cell[1]).to_bytes(4, "big"))
