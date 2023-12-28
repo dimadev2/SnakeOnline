@@ -181,7 +181,8 @@ class SnakeServer:
 
             for deleted_food_id in deleted_food[::-1]:
                 del self.foods[deleted_food_id]
-                self.generateFood()
+                while len(self.foods) < len(self.snakes) * FOOD_FOR_ONE + START_FOOD:
+                    self.generateFood()
         
 
     def collisionWithSnake(self, snake1, snake2):
