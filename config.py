@@ -1,4 +1,4 @@
-server_addr = '26.184.212.228'
+server_addr = '26.94.143.159'
 server_port = 9000
 queue_size = 5
 

@@ -186,7 +186,8 @@ class SnakeServer:
             for i in range(len(self.foods)):
                 if self.collisionWithFood(snake.body, self.foods[i]):
                     deleted_food.append(i)
-                    snake.addCell()
+                    with fieldSync:
+                        snake.addCell()
 
             with fieldSync:
                 for deleted_food_id in deleted_food[::-1]:
