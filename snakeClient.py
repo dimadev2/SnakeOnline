@@ -100,11 +100,15 @@ def start_game():
 
     win = pygame.display.set_mode((screen_width, screen_height))
 
-    client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    if (len(sys.argv) == 1):
-        client_sock.connect((server_addr, server_port))
-    else:
-        client_sock.connect((sys.argv[1], server_port))
+    try:
+        client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if (len(sys.argv) == 1):
+            client_sock.connect((server_addr, server_port))
+        else:
+            client_sock.connect((sys.argv[1], server_port))
+    except ConnectionRefusedError:
+        print('Server is not reachable')
+        return
 
     Thread(target=recv_routine).start()
 
@@ -137,6 +141,11 @@ def start_game():
                     break
 
 
+def draw_text(text, x, y, font, screen, color=(255, 255, 255)):
+    text_surface = font.render(text, True, color)
+    screen.blit(text_surface, (x, y))
+
+
 def draw_menu():
     global win
 
@@ -154,6 +163,9 @@ def draw_menu():
 
     pygame.mixer.music.load("song.mp3")
     pygame.mixer.music.play(-1)
+
+    pygame.font.init()
+    font = pygame.font.Font(None, 36)
 
     while running:
         for event in pygame.event.get():
@@ -181,6 +193,7 @@ def draw_menu():
                     sys.exit()
 
         win.blit(background, (0, 0))
+        draw_text("Vlad", WIDTH*0.875, HEIGHT*0.875, font, win)
 
         # pygame.draw.rect(win, (255, 0, 0, 128), button1_rect)
         # pygame.draw.rect(win, (0, 255, 0, 128), button2_rect)
