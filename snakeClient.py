@@ -193,7 +193,7 @@ def draw_menu():
                     sys.exit()
 
         win.blit(background, (0, 0))
-        draw_text("Vlad", WIDTH*0.875, HEIGHT*0.875, font, win)
+        draw_text("Vlad", int(WIDTH*0.875), int(HEIGHT*0.875), font, win)
 
         # pygame.draw.rect(win, (255, 0, 0, 128), button1_rect)
         # pygame.draw.rect(win, (0, 255, 0, 128), button2_rect)
