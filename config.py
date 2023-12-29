@@ -9,7 +9,7 @@ LEFT = 2
 RIGHT = 3
 NONE = 4
 
-WIDTH, HEIGHT = 800, 800
+WIDTH, HEIGHT = 600, 600
 
 cell_size = 15
 count_cell = 40
