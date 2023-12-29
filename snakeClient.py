@@ -2,9 +2,11 @@ import pygame
 from random import randint
 from threading import Thread, Lock
 from random import randrange
+from pygame.locals import *
 import socket
 from config import *
 import sys
+
 
 def draw_board():
     win.fill((100, 100, 100))
@@ -61,15 +63,17 @@ def recv_foods():
 
 
 def recv_routine():
+    global game_ended
     try:
-        while True:
+        while not game_ended:
             try:
                 [snakes, colors] = recv_snakes()
                 foods = recv_foods()
                 client_sock.send(int(key).to_bytes(4, "big"))
             except OSError:
                 client_sock.close()
-                pygame.quit()
+                game_ended = True
+                break
 
             draw_board()
 
@@ -83,48 +87,122 @@ def recv_routine():
 
     except KeyboardInterrupt:
         client_sock.close()
-        pygame.quit()
+        game_ended = True
 
 
-pygame.init()
+def start_game():
+    global key
+    global win
+    global client_sock
 
+    run = True
+    game_ended = False
+
+    win = pygame.display.set_mode((screen_width, screen_height))
+
+    client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if (len(sys.argv) == 1):
+        client_sock.connect((server_addr, server_port))
+    else:
+        client_sock.connect((sys.argv[1], server_port))
+
+    Thread(target=recv_routine).start()
+
+    while not game_ended:
+        pygame.time.delay(150)
+
+        m_event = pygame.event.get()
+        for event in m_event:
+            if event.type == pygame.QUIT:
+                client_sock.close()
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    key = UP
+
+                elif event.key == pygame.K_DOWN:
+                    key = DOWN
+
+                elif event.key == pygame.K_RIGHT:
+                    key = RIGHT
+
+                elif event.key == pygame.K_LEFT:
+                    key = LEFT
+
+                if event.key == pygame.K_ESCAPE:
+                    client_sock.close()
+                    game_ended = True
+                    break
+
+
+def draw_menu():
+    global win
+
+    win = pygame.display.set_mode((WIDTH, HEIGHT))
+
+    pygame.display.set_caption("ЯЗМЕЯ")
+
+    background = pygame.image.load("background.png")
+    background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+
+    button1_rect = pygame.Rect(50, 50, 300, 450)
+    button2_rect = pygame.Rect(450, 5, 350, 400)
+
+    running = True
+
+    pygame.mixer.music.load("song.mp3")
+    pygame.mixer.music.play(-1)
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                client_sock.close()
+                running = False
+
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    pos = pygame.mouse.get_pos()
+
+                    if button1_rect.collidepoint(pos):
+                        pygame.quit()
+                        client_sock.close()
+                        sys.exit()
+
+                    elif button2_rect.collidepoint(pos):
+                        start_game()
+                        win = pygame.display.set_mode((WIDTH, HEIGHT))
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    client_sock.close()
+                    sys.exit()
+
+        win.blit(background, (0, 0))
+
+        # pygame.draw.rect(win, (255, 0, 0, 128), button1_rect)
+        # pygame.draw.rect(win, (0, 255, 0, 128), button2_rect)
+
+        pygame.display.flip()
+
+    pygame.quit()
+    sys.exit()
+
+
+client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 key = NONE
-
-run = True
+game_ended = False
 
 screen_width = (cell_size + 1) * count_cell + 1
 screen_height = (cell_size + 1) * count_cell + 1
 
-win = pygame.display.set_mode((screen_width, screen_height))
+win = pygame.display
 
 
-client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+if __name__ == "__main__":
+    pygame.init()
+    pygame.display.set_caption("ЯЗМЕЯ")
 
-if (len(sys.argv) == 1):
-    client_sock.connect((server_addr, server_port))
-else:
-    client_sock.connect((sys.argv[1], server_port))
-
-Thread(target=recv_routine).start()
-
-while True:
-    pygame.time.delay(150)
-
-    m_event = pygame.event.get()
-    for event in m_event:
-        if event.type == pygame.QUIT:
-            client_sock.close()
-            pygame.quit()
-        
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                key = UP
-
-            elif event.key == pygame.K_DOWN:
-                key = DOWN
-
-            elif event.key == pygame.K_RIGHT:
-                key = RIGHT
-
-            elif event.key == pygame.K_LEFT:
-                key = LEFT
+    draw_menu()

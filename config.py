@@ -1,4 +1,4 @@
-server_addr = '26.184.212.228'
+server_addr = '127.0.0.1'
 server_port = 9000
 queue_size = 5
 
@@ -9,6 +9,7 @@ LEFT = 2
 RIGHT = 3
 NONE = 4
 
+WIDTH, HEIGHT = 800, 800
 
 cell_size = 15
 count_cell = 40
